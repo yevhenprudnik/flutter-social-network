@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/post.dart';
+import 'package:flutter_application_1/page/profile.dart';
 import 'package:intl/intl.dart';
 
 class PostCard extends StatelessWidget {
@@ -17,21 +18,30 @@ class PostCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: NetworkImage(post.authorAvatar ?? ''),
-                ),
-                Text(
-                  formattedTimestamp,
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.grey,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfilePage(uid: post.authorUid)),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage(post.authorAvatar ?? ''),
                   ),
-                ),
-              ],
+                  Text(
+                    formattedTimestamp,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 8.0),
             ClipRRect(

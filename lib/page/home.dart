@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/page/feed.dart';
-import 'package:flutter_application_1/page/login.dart';
 import 'package:flutter_application_1/page/profile.dart';
+import 'package:flutter_application_1/page/login.dart';
 import 'package:flutter_application_1/page/register.dart';
 import 'package:flutter_application_1/state/global.dart';
 
@@ -13,17 +13,29 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  final String? uid = AppState.getUserId();
+
+  static const List<Widget> _pages = <Widget>[
+    FeedPage(),
+    ProfilePage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Heap"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: AppState.getUserId() == null
-              ? [
+      body: AppState.getUserId() == null
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -50,36 +62,27 @@ class _HomePageState extends State<HomePage> {
                     ),
                     child: const Text('Register'),
                   ),
-                ]
-              : [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const FeedPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(200, 50)),
-                    child: const Text('Feed'),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfilePage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(200, 50)),
-                    child: const Text('Profile'),
-                  ),
                 ],
-        ),
-      ),
+              ),
+            )
+          : _pages[_selectedIndex],
+      bottomNavigationBar: AppState.getUserId() == null
+          ? null
+          : BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.feed),
+                  label: 'Feed',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.blue,
+              onTap: _onItemTapped,
+            ),
     );
   }
 }

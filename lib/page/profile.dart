@@ -5,7 +5,8 @@ import 'package:flutter_application_1/services/user.service.dart';
 import 'package:flutter_application_1/state/global.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final String? uid;
+  const ProfilePage({Key? key, this.uid}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -21,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchUser() async {
-    final uid = AppState.getUserId();
+    final uid = widget.uid ?? AppState.getUserId();
     if (uid == null) {
       return;
     }
@@ -115,7 +116,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               // Save form
                               _formKey.currentState!.save();
                               // Call a method to create a post
-                              PostService().createPost(user!, _imgUrl, _postTitle);
+                              PostService()
+                                  .createPost(user!, _imgUrl, _postTitle);
                             }
                           },
                           child: const Text('Create Post'),
