@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/infra/firebase.auth.dart';
 import 'package:flutter_application_1/models/user.dart';
 import 'package:flutter_application_1/services/user.service.dart';
+import 'package:flutter_application_1/state/global.dart';
 
+import 'home.dart';
 import 'login.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  const RegisterPage({Key? key});
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -17,27 +19,41 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _avatarController = TextEditingController();
+  final TextEditingController _profileDescriptionController = TextEditingController(); // New Controller
   final FirebaseAuthService _authService = FirebaseAuthService();
 
+  bool _isLoading = false;
+
   void _register() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     String email = _emailController.text;
     String password = _passwordController.text;
     String username = _usernameController.text;
     String avatar = _avatarController.text;
+    String profileDescription = _profileDescriptionController.text; // Get Profile Description
 
     AuthResult? result = await _authService.signUp(email, password);
+    setState(() {
+      _isLoading = false;
+    });
+
     if (result.error != null) {
-      print(result.error);
       _showAlert('Registration failed');
     } else {
       await UserService().createUser(User(
           uid: result.user!.uid,
           username: username,
           email: email,
-          avatar: avatar));
-      Navigator.push(
+          avatar: avatar,
+          profileDescription: profileDescription // Set Profile Description
+      ));
+      AppState.setUserId(result.user!.uid);
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     }
   }
@@ -67,51 +83,96 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  prefixIcon: const Icon(Icons.email),
+                ),
               ),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  prefixIcon: const Icon(Icons.person),
+                ),
               ),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  prefixIcon: const Icon(Icons.lock),
+                ),
+                obscureText: true,
               ),
-              obscureText: true,
-            ),
-            TextField(
-              controller: _avatarController,
-              decoration: const InputDecoration(
-                labelText: 'Avatar Url',
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: _avatarController,
+                decoration: InputDecoration(
+                  labelText: 'Avatar Url',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  prefixIcon: const Icon(Icons.image),
+                ),
               ),
-            ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: _register,
-              child: const Text('Sign Up'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Already have an account? Login'),
-            ),
-          ],
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: _profileDescriptionController, // New TextField
+                decoration: InputDecoration(
+                  labelText: 'Profile Description',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  prefixIcon: const Icon(Icons.description),
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _register,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 80.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text('Sign Up',
+                          style: TextStyle(fontSize: 16.0)),
+                    ),
+              const SizedBox(height: 20.0),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                },
+                child: const Text('Already have an account? Login'),
+              ),
+            ],
+          ),
         ),
       ),
     );

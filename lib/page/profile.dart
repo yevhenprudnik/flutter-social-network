@@ -37,7 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
         user = currentUser;
       });
 
-      // Fetch user's posts
       List<Post> userPosts = await PostService().getUserPosts(currentUser.uid);
       setState(() {
         posts = userPosts;
@@ -77,10 +76,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: const TextStyle(fontSize: 20),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    'Profile Description: \n${user!.profileDescription}',
-                    style: const TextStyle(fontSize: 20),
-                  ),
+                  if (user!.profileDescription != null &&
+                      user!.profileDescription!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Text(
+                        'Profile Description: \n${user!.profileDescription}',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
                   const SizedBox(height: 20),
                   Text(
                     'User Posts:',

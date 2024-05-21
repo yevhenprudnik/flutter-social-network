@@ -14,12 +14,20 @@ class PostService {
   }
 
   Future<List<Post>> getUserPosts(String authorUid) async {
-    return _firestoreService.getCollection<Post>(
+    List<Post> posts = await _firestoreService.getCollection<Post>(
       'post',
       (data) => Post.fromDocumentSnapshot(data),
       field: 'authorUid',
       value: authorUid,
     );
+
+    List<Future<Post>> futurePosts = posts.map((post) async {
+      User? user = await UserService().getUser(post.authorUid);
+      post.authorAvatar = user!.avatar;
+      return post;
+    }).toList();
+
+    return Future.wait(futurePosts);
   }
 
   Future<List<Post>> getPostsWithUser() async {

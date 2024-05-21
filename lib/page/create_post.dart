@@ -81,7 +81,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     await PostService().createPost(user!, _imgUrl, _postTitle);
-                    // After post creation, clear the form
                     _formKey.currentState!.reset();
                   }
                 },
