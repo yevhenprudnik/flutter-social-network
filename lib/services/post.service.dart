@@ -13,6 +13,15 @@ class PostService {
     );
   }
 
+  Future<List<Post>> getUserPosts(String authorUid) async {
+    return _firestoreService.getCollection<Post>(
+      'post',
+      (data) => Post.fromDocumentSnapshot(data),
+      field: 'authorUid',
+      value: authorUid,
+    );
+  }
+
   Future<List<Post>> getPostsWithUser() async {
     List<Post> posts = await _firestoreService.getCollection<Post>(
       'post',

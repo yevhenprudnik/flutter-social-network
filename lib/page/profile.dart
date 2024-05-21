@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/post.dart';
 import 'package:flutter_application_1/models/user.dart';
 import 'package:flutter_application_1/services/post.service.dart';
 import 'package:flutter_application_1/services/user.service.dart';
 import 'package:flutter_application_1/state/global.dart';
+import 'package:flutter_application_1/component/post_cart.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? uid;
@@ -14,6 +16,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   User? user;
+  List<Post> posts = [];
 
   @override
   void initState() {
@@ -33,12 +36,14 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         user = currentUser;
       });
+
+      // Fetch user's posts
+      List<Post> userPosts = await PostService().getUserPosts(currentUser.uid);
+      setState(() {
+        posts = userPosts;
+      });
     }
   }
-
-  final _formKey = GlobalKey<FormState>();
-  String _postTitle = '';
-  String _imgUrl = '';
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text('Profile'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: user == null
             ? const Center(child: CircularProgressIndicator())
@@ -77,53 +82,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: const TextStyle(fontSize: 20),
                   ),
                   const SizedBox(height: 20),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFormField(
-                          decoration:
-                              const InputDecoration(labelText: 'Post Title'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a title';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _postTitle = value!;
-                          },
-                        ),
-                        TextFormField(
-                          decoration:
-                              const InputDecoration(labelText: 'Img Url'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a title';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _imgUrl = value!;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Validate form
-                            if (_formKey.currentState!.validate()) {
-                              // Save form
-                              _formKey.currentState!.save();
-                              // Call a method to create a post
-                              PostService()
-                                  .createPost(user!, _imgUrl, _postTitle);
-                            }
-                          },
-                          child: const Text('Create Post'),
-                        ),
-                      ],
-                    ),
+                  Text(
+                    'User Posts:',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Column(
+                    children:
+                        posts.map((post) => PostCard(post: post)).toList(),
                   ),
                 ],
               ),

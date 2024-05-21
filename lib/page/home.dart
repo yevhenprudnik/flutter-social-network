@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/page/feed.dart';
 import 'package:flutter_application_1/page/profile.dart';
+import 'package:flutter_application_1/page/create_post.dart';
 import 'package:flutter_application_1/page/login.dart';
 import 'package:flutter_application_1/page/register.dart';
 import 'package:flutter_application_1/state/global.dart';
@@ -17,9 +18,10 @@ class _HomePageState extends State<HomePage> {
 
   final String? uid = AppState.getUserId();
 
-  static const List<Widget> _pages = <Widget>[
-    FeedPage(),
-    ProfilePage(),
+  static final List<Widget> _pages = <Widget>[
+    const FeedPage(),
+    const CreatePostPage(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -73,6 +75,10 @@ class _HomePageState extends State<HomePage> {
                 BottomNavigationBarItem(
                   icon: Icon(Icons.feed),
                   label: 'Feed',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.add),
+                  label: 'Create Post',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person),

@@ -4,11 +4,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirestoreDataService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<T>> getCollection<T extends Model>(String collectionName,
-      T Function(Map<String, dynamic>) fromDocument) async {
+  Future<List<T>> getCollection<T extends Model>(
+    String collectionName,
+    T Function(Map<String, dynamic>) fromDocument, {
+    String? field,
+    dynamic value,
+  }) async {
     try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await _firestore.collection(collectionName).get();
+      Query<Map<String, dynamic>> query = _firestore.collection(collectionName);
+
+      if (field != null && value != null) {
+        query = query.where(field, isEqualTo: value);
+      }
+
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await query.get();
       List<T> items = querySnapshot.docs.map((doc) {
         return fromDocument(doc.data());
       }).toList();
