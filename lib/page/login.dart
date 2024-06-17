@@ -8,16 +8,16 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuthService _authService = FirebaseAuthService();
   bool _isLoading = false;
 
-  void _login() async {
+  void _login(final BuildContext context) async {
     setState(() {
       _isLoading = true;
     });
@@ -33,11 +33,13 @@ class _LoginPageState extends State<LoginPage> {
     if (result.error != null) {
       _showAlert('Authentication failed: ${result.error}');
     } else {
-      AppState.setUserId(result.user!.uid);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+      AppState.setUserId(result.user?.uid);
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
     }
   }
 
@@ -65,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Login'),
         centerTitle: true,
       ),
@@ -105,21 +108,24 @@ class _LoginPageState extends State<LoginPage> {
               _isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _login,
+                      onPressed: () => _login(context),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 80.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
-                      child: const Text('Login', style: TextStyle(fontSize: 16.0)),
+                      child:
+                          const Text('Login', style: TextStyle(fontSize: 16.0)),
                     ),
               const SizedBox(height: 20.0),
               TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterPage()),
                   );
                 },
                 child: const Text('Don\'t have an account? Sign Up'),

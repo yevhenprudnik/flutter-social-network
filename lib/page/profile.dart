@@ -7,14 +7,18 @@ import 'package:flutter_application_1/state/global.dart';
 import 'package:flutter_application_1/component/post_cart.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({
+    super.key,
+    this.uid,
+  });
+
   final String? uid;
-  const ProfilePage({Key? key, this.uid}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  ProfilePageState createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class ProfilePageState extends State<ProfilePage> {
   User? user;
   List<Post> posts = [];
 
@@ -48,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: widget.uid != null,
         title: const Text('Profile'),
       ),
       body: SingleChildScrollView(
@@ -57,26 +62,32 @@ class _ProfilePageState extends State<ProfilePage> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  Container(
                     width: 120,
                     height: 120,
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundImage: NetworkImage(user!.avatar),
-                    ),
+                    child: user?.avatar != null && user!.avatar.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              user!.avatar,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Username: ${user!.username}',
+                    'Username: ${user?.username}',
                     style: const TextStyle(fontSize: 20),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Email: ${user!.email}',
+                    'Email: ${user?.email}',
                     style: const TextStyle(fontSize: 20),
                   ),
                   const SizedBox(height: 10),
-                  if (user!.profileDescription != null &&
+                  if (user?.profileDescription != null &&
                       user!.profileDescription!.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10.0),
@@ -86,10 +97,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   const SizedBox(height: 20),
-                  Text(
+                  const Text(
                     'User Posts:',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Column(

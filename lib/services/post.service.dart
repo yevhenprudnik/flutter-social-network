@@ -20,14 +20,14 @@ class PostService {
       field: 'authorUid',
       value: authorUid,
     );
+    User? user = await UserService().getUser(authorUid);
 
-    List<Future<Post>> futurePosts = posts.map((post) async {
-      User? user = await UserService().getUser(post.authorUid);
-      post.authorAvatar = user!.avatar;
+    List<Post> userPosts = posts.map((post) {
+      post.authorAvatar = user?.avatar;
       return post;
     }).toList();
 
-    return Future.wait(futurePosts);
+    return userPosts;
   }
 
   Future<List<Post>> getPostsWithUser() async {
@@ -38,14 +38,18 @@ class PostService {
 
     List<Future<Post>> futurePosts = posts.map((post) async {
       User? user = await UserService().getUser(post.authorUid);
-      post.authorAvatar = user!.avatar;
+      post.authorAvatar = user?.avatar;
       return post;
     }).toList();
 
     return Future.wait(futurePosts);
   }
 
-  Future<void> createPost(User user, String imgUrl, String postTitle) async {
+  Future<void> createPost(
+    User user,
+    String imgUrl,
+    String postTitle,
+  ) async {
     Post newPost = Post(
       img: imgUrl,
       title: postTitle,

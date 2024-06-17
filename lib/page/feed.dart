@@ -7,15 +7,16 @@ class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
 
   @override
-  _FeedPageState createState() => _FeedPageState();
+  FeedPageState createState() => FeedPageState();
 }
 
-class _FeedPageState extends State<FeedPage> {
-  late List<Post> posts = [];
+class FeedPageState extends State<FeedPage> {
+  List<Post> posts = [];
 
   @override
   void initState() {
     super.initState();
+
     fetchPosts();
   }
 
@@ -30,9 +31,11 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Home Page'),
       ),
       body: ListView.builder(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         itemCount: posts.length,
         itemBuilder: (context, index) {
           return PostCard(post: posts[index]);

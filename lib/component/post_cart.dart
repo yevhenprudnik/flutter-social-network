@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 class PostCard extends StatelessWidget {
   final Post post;
 
-  PostCard({required this.post});
+  const PostCard({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,12 @@ class PostCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(post.authorAvatar ?? ''),
+                    backgroundImage: post.authorAvatar != null
+                        ? NetworkImage(post.authorAvatar!)
+                        : null,
+                    backgroundColor: post.authorAvatar != null
+                        ? null
+                        : ThemeData().colorScheme.primaryContainer,
                   ),
                   Text(
                     formattedTimestamp,
@@ -46,15 +51,21 @@ class PostCard extends StatelessWidget {
             const SizedBox(height: 8.0),
             ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: Image.network(
+              child:  Image.network(
                 post.img,
-                height: 200,
+                height: 300,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  print('Error loading image: $error');
-                  return const Text('Error loading image');
-                },
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey,
+                  height: 200,
+                  child: Center(
+                    child: Text(
+                      'Error loading image',
+                      style: TextStyle(color: Colors.red.shade200),
+                    ),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 8.0),
@@ -75,6 +86,10 @@ class PostCard extends StatelessWidget {
     Duration difference = DateTime.now().difference(timestamp);
     if (difference.inDays > 0) {
       return DateFormat.yMMMd().format(timestamp);
+    } else if (difference.inHours == 1) {
+      return '${difference.inHours} hour ago';
+    } else if (difference.inMinutes == 1) {
+      return '${difference.inHours} minute ago';
     } else if (difference.inHours > 0) {
       return '${difference.inHours} hours ago';
     } else if (difference.inMinutes > 0) {

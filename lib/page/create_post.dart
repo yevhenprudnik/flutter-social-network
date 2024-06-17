@@ -5,13 +5,13 @@ import 'package:flutter_application_1/services/user.service.dart';
 import 'package:flutter_application_1/state/global.dart';
 
 class CreatePostPage extends StatefulWidget {
-  const CreatePostPage({Key? key}) : super(key: key);
+  const CreatePostPage({super.key});
 
   @override
-  _CreatePostPageState createState() => _CreatePostPageState();
+  CreatePostPageState createState() => CreatePostPageState();
 }
 
-class _CreatePostPageState extends State<CreatePostPage> {
+class CreatePostPageState extends State<CreatePostPage> {
   User? user;
   final _formKey = GlobalKey<FormState>();
   String _postTitle = '';
@@ -42,6 +42,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Create Post'),
       ),
       body: Padding(
